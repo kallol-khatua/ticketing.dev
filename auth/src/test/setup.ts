@@ -2,9 +2,7 @@ import mongoose from "mongoose";
 
 beforeAll(async () => {
     try {
-        process.env.JWT_SECRET = "alshakshakh";
-
-        await mongoose.connect("mongodb://localhost:27017/ticketing-test");
+        await mongoose.connect(process.env.MONGO_URI!);
     } catch (error) {
         console.error("Error connecting to the database", error);
     }

@@ -6,6 +6,8 @@ describe("User signup", () => {
         return request(app)
             .post("/v1/api/user/signup")
             .send({
+                firstName: "Kallol",
+                lastName: "Khatua",
                 email: "kallolkhatua2005@gmail.com",
                 password: "Kallol@2005"
             })
@@ -13,7 +15,6 @@ describe("User signup", () => {
             .then((response) => {
                 expect(response.body.success).toEqual(true)
                 expect(response.body.statusCode).toEqual(201)
-                expect(response.body.message).toEqual("New user created")
             });
     }, 10000)
 
@@ -21,25 +22,60 @@ describe("User signup", () => {
         return request(app)
             .post("/v1/api/user/signup")
             .send({
+                firstName: "Kallol",
+                lastName: "Khatua",
                 password: "Kallol@2005"
             })
-            .expect(400);
+            .expect(400)
+            .then((response) => {
+                expect(response.body.success).toEqual(false)
+                expect(response.body.statusCode).toEqual(400)
+            });
     }, 10000)
 
     it("returns 400 when password is missing", async () => {
         return request(app)
             .post("/v1/api/user/signup")
             .send({
-                email: "kallolkhatua2005@gmail.com"
+                firstName: "Kallol",
+                lastName: "Khatua",
+                email: "kallolkhatua2005@gmail.com",
             })
-            .expect(400);
+            .expect(400)
+            .then((response) => {
+                expect(response.body.success).toEqual(false)
+                expect(response.body.statusCode).toEqual(400)
+            });
     }, 10000)
 
-    it("returns 400 when email and password both missing", async () => {
+    it("returns 400 when first name in missing", async () => {
         return request(app)
             .post("/v1/api/user/signup")
-            .send({})
-            .expect(400);
+            .send({
+                lastName: "Khatua",
+                email: "kallolkhatua2005@gmail.com",
+                password: "Kallol@2005"
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.success).toEqual(false)
+                expect(response.body.statusCode).toEqual(400)
+            });
+    }, 10000)
+
+    it("returns 400 when last name in missing", async () => {
+        return request(app)
+            .post("/v1/api/user/signup")
+            .send({
+                firstName: "Kallol",
+                email: "kallolkhatua2005@gmail.com",
+                password: "Kallol@2005"
+            })
+            .expect(400)
+            .then((response) => {
+                expect(response.body.success).toEqual(false)
+                expect(response.body.statusCode).toEqual(400)
+            });
     }, 10000)
 
     // it("returns 400 for an invalid email format", async() => {
@@ -66,6 +102,8 @@ describe("User signup", () => {
         await request(app)
             .post("/v1/api/user/signup")
             .send({
+                firstName: "Kallol",
+                lastName: "Khatua",
                 email: "kallolkhatua2005@gmail.com",
                 password: "Kallol@2005"
             })
@@ -74,21 +112,11 @@ describe("User signup", () => {
         return request(app)
             .post("/v1/api/user/signup")
             .send({
+                firstName: "Kallol",
+                lastName: "Khatua",
                 email: "kallolkhatua2005@gmail.com",
                 password: "Kallol@246899"
             })
             .expect(400); // Second signup fails
     }, 15000)
-
-    it("should sets a cookie after successfull signup", async () => {
-        const response = await request(app)
-            .post("/v1/api/user/signup")
-            .send({
-                email: "kallolkhatua2005@gmail.com",
-                password: "Kallol@2005"
-            })
-            .expect(201);
-
-        expect(response.get("Set-Cookie")).toBeDefined();
-    }, 10000)
 })

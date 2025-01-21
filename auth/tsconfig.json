@@ -1,10 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true
-  }
+    "target": "ES2021", // Specify ECMAScript target version
+    "module": "CommonJS", // Specify module code generation
+    "rootDir": "./src", // Root directory of your source files
+    "outDir": "./dist", // Output directory for compiled files
+    "strict": true, // Enable strict type-checking options
+    "esModuleInterop": true, // Allow default imports from modules
+    "forceConsistentCasingInFileNames": true, // Ensure consistent file casing
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "resolveJsonModule": true, // Allow importing .json files
+    "declaration": true, // Generate .d.ts declaration files
+    "sourceMap": true, // Generate source maps
+    "moduleResolution": "node", // Use Node.js-style module resolution
+    "baseUrl": "./", // Base directory to resolve non-relative module names
+    "paths": { // Alias paths for cleaner imports
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*" // Include all TypeScript files in the src folder
+  ],
+  "exclude": [
+    "node_modules", // Exclude node_modules folder
+    "dist" // Exclude output folder
+  ]
 }

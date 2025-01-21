@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
-    "test": "jest --watchAll --no-cache"
+    "test": "jest --watchAll --no-cache --runInBand"
   },
   "keywords": [],
   "author": "",

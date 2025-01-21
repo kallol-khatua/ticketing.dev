@@ -1,4 +1,4 @@
-import { Kafka } from 'kafkajs';
+import { Kafka, Partitioners } from 'kafkajs';
 
 // Kafka Producer Configuration
 const kafka = new Kafka({
@@ -10,7 +10,7 @@ const kafka = new Kafka({
 //     allowAutoTopicCreation: false,
 // });
 
-const producer = kafka.producer();
+const producer = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
 
 // Initialize Producer
 export const startProducer = async (): Promise<void> => {

@@ -8,7 +8,7 @@ dotenv.config({ path: '.env.test' });
 (async () => {
     try {
         await startConsumer();
-        await startProducer
+        await startProducer();
     } catch (error) {
 
     }

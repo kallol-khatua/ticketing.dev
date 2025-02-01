@@ -1,5 +1,5 @@
 import { orderStatus } from '../helper/order-status';
-import Order from '../models/order';
+import Order, { IOrder } from '../models/order';
 import { Kafka } from 'kafkajs';
 
 // Kafka Consumer Configuration
@@ -17,6 +17,7 @@ export const startConsumer = async () => {
 
     await consumer.subscribe({ topic: 'order-creation', fromBeginning: true });
     await consumer.subscribe({ topic: 'order-cancellation', fromBeginning: true });
+    await consumer.subscribe({ topic: 'order-expired', fromBeginning: true });
 
     // Handle messages from Kafka
     await consumer.run({
@@ -30,7 +31,8 @@ export const startConsumer = async () => {
                 } catch (error) {
                     console.log("error while saving the ticket to db", error)
                 }
-            } else if (topic === "order-cancellation") {
+            }
+            else if (topic === "order-cancellation") {
                 const value = JSON.parse(message.value?.toString()!)
 
                 try {
@@ -41,6 +43,21 @@ export const startConsumer = async () => {
                     }
 
                     await Order.findByIdAndUpdate(existingOrder._id, { status: orderStatus.cancelled });
+                } catch (error) {
+                    console.error("Error while changing e on order-cancellation consumer", error)
+                }
+            }
+            else if (topic === "order-expired") {
+                const value = JSON.parse(message.value?.toString()!);
+
+                try {
+                    const existingOrder = await Order.findById(value._id);
+                    // If ticket not found
+                    if (!existingOrder) {
+                        return;
+                    }
+
+                    await Order.findByIdAndUpdate(existingOrder._id, { status: orderStatus.expired });
                 } catch (error) {
                     console.error("Error while changing e on order-cancellation consumer", error)
                 }

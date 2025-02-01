@@ -2,7 +2,7 @@ import { orderStatus } from '../helper/order-status';
 import Order, { IOrder } from '../models/order';
 import Ticket from '../models/ticket';
 import { Kafka } from 'kafkajs';
-import { publishPaymentFailedEvent } from './producer';
+import { publishOrderExpiredEvent, publishPaymentFailedEvent } from './producer';
 
 // Kafka Consumer Configuration
 const kafka = new Kafka({
@@ -19,6 +19,7 @@ export const startConsumer = async () => {
 
     await consumer.subscribe({ topic: 'ticket-creation', fromBeginning: true });
     await consumer.subscribe({ topic: 'payment-verification', fromBeginning: true });
+    await consumer.subscribe({ topic: 'order-expiration-queue', fromBeginning: true });
 
     // Handle messages from Kafka
     await consumer.run({
@@ -62,6 +63,33 @@ export const startConsumer = async () => {
                     }
                 } catch (error) {
                     console.error("Error at payment-verification kafka consumer at order-microservice", error);
+                }
+            } else if (topic === "order-expiration-queue") {
+                const value: IOrder = JSON.parse(message.value?.toString()!);
+
+                try {
+                    const existingOrder = await Order.findById(value._id);
+                    if (!existingOrder) {
+                        return;
+                    }
+
+                    if (existingOrder.status != orderStatus.awaitingPayment) {
+                        return;
+                    }
+
+                    // change status to expired,
+                    await Order.findByIdAndUpdate(existingOrder._id, { status: orderStatus.expired });
+
+                    // and remove order id from the ticket
+                    await Ticket.findByIdAndUpdate(existingOrder.ticket_id, { order_id: null });
+
+                    // also emit the event to kafka
+                    // so that in ticket microservice, order id could be removed from the ticket
+                    // and in payment microservice order can be marked as expired
+                    await publishOrderExpiredEvent(String(existingOrder._id), JSON.stringify(existingOrder));
+
+                } catch (error) {
+                    console.error("Error at order-expiration-queue kafka consumer at order-microservice", error);
                 }
             } else {
                 console.log("Unknown topic", topic);

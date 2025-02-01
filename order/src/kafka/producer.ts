@@ -59,6 +59,19 @@ export const publishPaymentFailedEvent = async (key: string, value: string): Pro
     }
 }
 
+export const publishOrderExpiredEvent = async (key: string, value: string): Promise<void> => {
+    try {
+        await producer.send({
+            topic: "order-expired",
+            messages: [
+                { key, value }
+            ]
+        })
+    } catch (error) {
+        console.error("Error while publishing order expired event", error);
+    }
+}
+
 export const stopProducer = async (): Promise<void> => {
     await producer.disconnect();
     console.log('Producer disconnected from Kafka');

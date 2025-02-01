@@ -4,6 +4,12 @@ interface ITicket extends Document {
     _id: Schema.Types.ObjectId,
     title: string,
     description: string,
+    location: string,
+    date: string,
+    time: string,
+    image: {
+        url: string
+    },
     user_id: Schema.Types.ObjectId,
     price: number,
     order_id: Schema.Types.ObjectId,
@@ -19,6 +25,24 @@ const ticketSchema: Schema<ITicket> = new Schema<ITicket>({
     description: {
         type: String,
         required: true,
+    },
+    location: {
+        type: String,
+        required: true,
+    },
+    date: {
+        type: String,
+        required: true,
+    },
+    time: {
+        type: String,
+        required: true,
+    },
+    image: {
+        url: {
+            type: String,
+            required: true
+        }
     },
     user_id: {
         type: Schema.Types.ObjectId,

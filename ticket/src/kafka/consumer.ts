@@ -17,6 +17,7 @@ export const startConsumer = async () => {
     await consumer.subscribe({ topic: 'order-creation', fromBeginning: true });
     await consumer.subscribe({ topic: 'order-cancellation', fromBeginning: true });
     await consumer.subscribe({ topic: 'payment-failed', fromBeginning: true });
+    await consumer.subscribe({ topic: 'order-expired', fromBeginning: true });
 
     // Handle messages from Kafka
     await consumer.run({
@@ -63,7 +64,22 @@ export const startConsumer = async () => {
                 } catch (error) {
                     console.error("Error while removing order id from a ticket on payment-failed consumer on ticket-microservice", error)
                 }
-            } else {
+            } else if (topic === "order-expired") {
+                const value = JSON.parse(message.value?.toString()!)
+
+                try {
+                    const existingTicket = await Ticket.findById(value.ticket_id);
+                    // If ticket not found
+                    if (!existingTicket) {
+                        return;
+                    }
+
+                    await Ticket.findByIdAndUpdate(existingTicket._id, { order_id: null });
+                } catch (error) {
+                    console.error("Error while removing order id from a ticket on order-cancellation consumer", error)
+                }
+            }
+            else {
                 console.log("Unknown topic");
             }
         },

@@ -11,7 +11,7 @@ const PORT = Number(process.env.TICKET_SERVICE_PORT!) || 3001;
 (async () => {
     // Check all the env varible exist or not if not exist then do not start the app
     if (!process.env.MONGO_URI || !process.env.JWT_SECRET || !process.env.TICKET_SERVICE_PORT
-        || !process.env.KAFKA_BROKER
+        || !process.env.KAFKA_BROKER || !process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET
     ) {
         console.log("Envirnment varible not found, Exiting app!")
         process.exit(1);

@@ -23,12 +23,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use("/v1/api/orders", createOrderRouter);
 // Cancel order router
 app.use("/v1/api/orders", cancelOrderRouter);
+// get all order created by a user
+app.use("/v1/api/orders", getCreatedOrderRouter);
 // Order details by order id
 app.use("/v1/api/orders", orderDetailRouter);
 // Order details by ticket id
 // app.use("/v1/api/orders", orderDetailRouter);
-// get all order created by a user
-app.use("/v1/api/orders", getCreatedOrderRouter);
 
 
 app.all("*", async (req: Request, res: Response, next: NextFunction): Promise<void> => {

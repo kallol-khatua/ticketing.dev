@@ -5,7 +5,7 @@ import { SuccessResponse } from "../helper/success-response";
 import Order from "../models/order";
 const router = express.Router();
 
-router.post("/created-by-user", userValidation,
+router.get("/created-by-user", userValidation,
     async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const allOrders = await Order.find({ user_id: (req.user as JwtPayload).user_id }).populate("ticket_id");
